@@ -1,2 +1,2 @@
-media/uploads
+media/uploads/*
 myproject/.env
