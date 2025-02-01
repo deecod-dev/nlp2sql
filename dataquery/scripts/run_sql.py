@@ -1,9 +1,7 @@
 import sys
 print("sql ran")
 sqlq=sys.argv[1].strip("`")
-# print(sqlq)
 sqlq=sqlq.replace("\n"," ")
-# print(sqlq)
 sqlq=sqlq.replace("sql", "").strip()
 print(sqlq)
 print("hmm")
