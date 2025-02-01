@@ -46,7 +46,7 @@
 
     <!-- File Upload Section -->
     <div class="upload-container">
-        <form id="upload-form" method="post" enctype="multipart/form-data">
+        <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'process_file' %}">
             {% csrf_token %}
             <input type="file" id="file-input" name="file" accept=".csv" hidden>
             <div id="drop-area" class="drop-area">
@@ -108,88 +108,114 @@
             }
         });
 
-        uploadForm.addEventListener('submit', (event) => {
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();  // Prevent default form submission
+
+            // Check if a file is selected
             if (!fileInput.files.length) {
-                event.preventDefault();
                 alert("Please select a file before uploading.");
-            } else {
-                // After upload, hide the upload section and show the query section
-                event.preventDefault();  // Prevent the default form submission
-                uploadForm.style.display = 'none';  // Hide the upload section
-                queryContainer.style.display = 'block';  // Show the query section
+                return;
+            }
+
+            // Prepare FormData to send the file
+            const formData = new FormData(uploadForm);
+
+            try {
+                // Send the file to the server using fetch (AJAX)
+                const response = await fetch('{% url "process_file" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value  // CSRF token
+                    }
+                });
+
+                const data = await response.json();
+                console.log(data);
+
+                if (data.message === 'File successfully uploaded') {
+                    // File upload success, now hide the form and show the query input section
+                    uploadForm.style.display = 'none';  // Hide the upload section
+                    queryContainer.style.display = 'block';  // Show the query section
+                } else {
+                    alert("Error uploading file: " + data.error);
+                }
+            } catch (error) {
+                alert('Error in file upload: ' + error.message);
             }
         });
 
         // Handle "Get Output" button click
         getOutputBtn.addEventListener('click', async (event) => {
-        const query = queryInput.value.trim();
-        if (query) {
-            try {
-                // Send the query to the backend using Fetch API
-                const response = await fetch('/process-query/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
-                    },
-                    body: `query=${encodeURIComponent(query)}`
-                });
+            const query = queryInput.value.trim();
+            if (query) {
+                try {
+                    // Send the query to the backend using Fetch API
+                    const response = await fetch('/process-query/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
+                        },
+                        body: `query=${encodeURIComponent(query)}`
+                    });
 
-                const data = await response.json();
+                    const data = await response.json();
 
-                if (data.result) {
-                    // Process the result and render it in a table
-                    renderQueryResults(data.result);
-                    outputContainer.style.display = 'block';
-                } else if (data.error) {
-                    queryOutput.textContent = `Error: ${data.error}`;
-                    outputContainer.style.display = 'block';
+                    if (data.result) {
+                        // Process the result and render it in a table
+                        renderQueryResults(data.result);
+                        outputContainer.style.display = 'block';
+                    } else if (data.error) {
+                        queryOutput.textContent = `Error: ${data.error}`;
+                        outputContainer.style.display = 'block';
+                    }
+                } catch (error) {
+                    alert('Error in fetching data from the server.');
                 }
-            } catch (error) {
-                alert('Error in fetching data from the server.');
+            } else {
+                alert('Please enter a query.');
             }
-        } else {
-            alert('Please enter a query.');
-        }
-    });
-    function renderQueryResults(results) {
-        const table = document.createElement('table');
-        const thead = table.createTHead();
-        const tbody = table.createTBody();
-
-        // Create table headers
-        const headerRow = thead.insertRow();
-        Object.keys(results[0]).forEach(key => {
-            const th = document.createElement('th');
-            th.textContent = key;
-            headerRow.appendChild(th);
         });
 
-        // Create table rows
-        results.forEach(row => {
-            const tr = tbody.insertRow();
-            Object.values(row).forEach(value => {
-                const td = tr.insertCell();
-                td.textContent = value;
+        function renderQueryResults(results) {
+            const table = document.createElement('table');
+            const thead = table.createTHead();
+            const tbody = table.createTBody();
+
+            // Create table headers
+            const headerRow = thead.insertRow();
+            Object.keys(results[0]).forEach(key => {
+                const th = document.createElement('th');
+                th.textContent = key;
+                headerRow.appendChild(th);
             });
-        });
 
-        // Append the table to the output container
-        const queryOutput = document.getElementById('query-output');
-        queryOutput.innerHTML = '';  // Clear previous content
-        queryOutput.appendChild(table);
-
-        // Handle the expandable output logic
-        const expandBtn = document.getElementById('expand-btn');
-        const outputContainer = document.getElementById('output-container');
-
-        if (results.length > 10) {  // If the result has more than 10 rows, show the expand button
-            expandBtn.style.display = 'inline-block';
-            expandBtn.addEventListener('click', () => {
-                outputContainer.classList.toggle('expanded');  // Toggle the expanded class
+            // Create table rows
+            results.forEach(row => {
+                const tr = tbody.insertRow();
+                Object.values(row).forEach(value => {
+                    const td = tr.insertCell();
+                    td.textContent = value;
+                });
             });
+
+            // Append the table to the output container
+            const queryOutput = document.getElementById('query-output');
+            queryOutput.innerHTML = '';  // Clear previous content
+            queryOutput.appendChild(table);
+
+            // Handle the expandable output logic
+            const expandBtn = document.getElementById('expand-btn');
+            const outputContainer = document.getElementById('output-container');
+
+            if (results.length > 10) {  // If the result has more than 10 rows, show the expand button
+                expandBtn.style.display = 'inline-block';
+                expandBtn.addEventListener('click', () => {
+                    outputContainer.classList.toggle('expanded');  // Toggle the expanded class
+                });
+            }
         }
-    }
     </script>
 
 </body>
