@@ -68,7 +68,9 @@
     <div id="output-container" class="output-container">
         <h2>Query Output:</h2>
         <pre id="query-output"></pre>
-        <!-- Add the Expand Button here -->
+        <a id="download-link" style="display: none; margin-top: 15px;" class="download-btn">
+            Download Result (CSV)
+        </a>
         <button id="expand-btn" style="display: none;">Expand</button>
     </div>
 
@@ -153,31 +155,30 @@
             if (query) {
                 console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", query);
                 try {
-                    // Send the query to the backend using Fetch API
-                    console.log("hmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
                     const response = await fetch('/process-query/', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
                         },
                         body: `query=${encodeURIComponent(query)}`
                     });
-                    console.log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo", response);
+                    
                     const data = await response.json();
-                    console.log("chalo", data[0]);
+                    
+                    // ADD/REPLACE THIS SECTION
                     if (data.result) {
-                        // Process the result and render it in a table
-                        console.log("rendering")
                         renderQueryResults(data.result);
-                        console.log("rendered")
-                        // Ensure the output container is visible after rendering the results
-                        outputContainer.style.display = 'block';  // Show the output container
-                        console.log("made visible")
+                        const downloadLink = document.getElementById('download-link');
+                        downloadLink.style.display = 'inline-block';
+                        downloadLink.href = data.download_url;
+                        outputContainer.style.display = 'block';
                     } else if (data.error) {
                         queryOutput.textContent = `Error: ${data.error}`;
-                        outputContainer.style.display = 'block';  // Show the output container even in case of error
+                        outputContainer.style.display = 'block';
                     }
+                    // END OF MODIFIED SECTION
+                    
                 } catch (error) {
                     alert('Query is too complex or can\'t be calculated.');
                 }
