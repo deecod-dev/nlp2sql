@@ -6,7 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload CSV File</title>
+    <!-- <link rel="stylesheet" href="{% static 'styles.css' %}"> -->
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <!-- <style>
         /* Add some basic CSS to hide the input and output initially */
         #query-container, #output-container {
@@ -37,26 +39,29 @@
     </style> -->
 </head>
 <body>
+    <div class="mainpage">
+        <!-- Header Section -->
+        <header>
+            <h1>Text to SQL</h1>
+            <p>Analyze your data files in just 10 seconds</p>
+        </header>
 
-    <!-- Header Section -->
-    <header>
-        <h1>Upload a CSV File</h1>
-        <p>Drag and drop a file, or click to select one</p>
-    </header>
-
-    <!-- File Upload Section -->
-    <div class="upload-container">
-        <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'process_file' %}">
-            {% csrf_token %}
-            <input type="file" id="file-input" name="file" accept=".csv" hidden>
-            <div id="drop-area" class="drop-area">
-                <p>Drag & Drop your file here or <span class="browse-btn">Browse</span></p>
-            </div>
+        <!-- File Upload Section -->
+        <div class="upload-container">
+            <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'process_file' %}">
+                {% csrf_token %}
+                <div class="up">
+                    <input type="file" id="file-input" name="file" accept=".csv" hidden>
+                    <div id="drop-area" class="drop-area">
+                        <p id="droptext">Drag & Drop your file here or <span class="browse-btn">Browse</span></p>
+                    </div>
+                    
+                    <button type="submit" class="upload-btn">Upload File</button>
+                </div>
+            </form>
             <p id="file-name"></p>
-            <button type="submit" class="upload-btn">Upload File</button>
-        </form>
+        </div>
     </div>
-
     <!-- Query Input Section (Initially Hidden) -->
     <div id="query-container" class="query-container">
         <h2>Enter Your Query:</h2>
@@ -86,6 +91,7 @@
         const getOutputBtn = document.getElementById('get-output-btn');
         const queryInput = document.getElementById('query-input');
         const queryOutput = document.getElementById('query-output');
+        const dpt = document.getElementById('droptext');
 
         window.addEventListener("beforeunload", function () {
             navigator.sendBeacon("/drop_table/");  // Send request to Django before leaving
@@ -94,7 +100,8 @@
 
         fileInput.addEventListener('change', (event) => {
             if (event.target.files.length > 0) {
-                fileNameDisplay.textContent = event.target.files[0].name;
+
+                dpt.textContent = event.target.files[0].name;
             }
         });
 
@@ -113,7 +120,7 @@
             const files = event.dataTransfer.files;
             if (files.length > 0) {
                 fileInput.files = files;
-                fileNameDisplay.textContent = files[0].name;
+                dpt.textContent = files[0].name;
             }
         });
 
@@ -145,9 +152,10 @@
                 if (data.message === 'File successfully uploaded') {
                     // File upload success, now hide the form and show the query input section
                     uploadForm.style.display = 'none';  // Hide the upload section
-                    queryContainer.style.display = 'block';  // Show the query section
+                    queryContainer.style.display = 'flex';  // Show the query section
                     document.querySelector('header').style.display = 'none'; 
                     document.querySelector('.upload-container').style.display = 'none'; 
+                    document.querySelector('.mainpage').style.display = 'none'; 
                 } else {
                     alert("Error uploading file: " + data.error);
                 }

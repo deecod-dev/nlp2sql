@@ -45,7 +45,8 @@ INSTALLED_APPS = [
 import os
 STATIC_URL = '/static/'  # This is the default setting
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "dataquery/static"),  # Make sure this path is correct
+    # os.path.join(BASE_DIR, "dataquery/static"),  # Make sure this path is correct
+    BASE_DIR / 'static',
 ]
 # Directory where Django will collect all static files when you run collectstatic
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

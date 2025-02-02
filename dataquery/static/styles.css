@@ -1,234 +1,273 @@
-/* General Styling */
+/* ===== Base Styles ===== */
+:root {
+    --bg-color: #1a1a1a;
+    --container-bg: #262626;
+    /* --text-primary: #e0e0e0; */
+    --text-primary: white;
+    --text-secondary: #b3b3b3;
+    --accent: #3d5afe;
+    --accent-hover: #2d4af0;
+    --border-color: #4d4d4d;
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: #f4f4f4;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.6;
     margin: 0;
     padding: 0;
 }
 
-/* Header Section */
+/* ===== Header ===== */
 header {
-    background: #2c3e50;
-    color: white;
-    padding: 20px;
-    font-size: 20px;
-}
-
-/* Upload Container */
-.upload-container {
-    width: 50%;
-    margin: 50px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-.output-container{
-    width: 50%;
-    margin: 50px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-/* Drag & Drop Area */
-.drop-area {
-    border: 2px dashed #2c3e50;
-    padding: 30px;
-    cursor: pointer;
-    border-radius: 10px;
-    background: #ecf0f1;
-    transition: 0.3s;
-}
-
-.drop-area p {
-    margin: 0;
-    font-size: 16px;
-    color: #2c3e50;
-}
-
-.drop-area.drag-over {
-    background: #bdc3c7;
-}
-
-/* Browse Button */
-.browse-btn {
-    color: #3498db;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* File Upload Button */
-.upload-btn {
-    margin-top: 15px;
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.upload-btn:hover {
-    background: #2980b9;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .upload-container {
-        width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* background: #2d2d2d; */
+    padding: 1.5rem;
+    /* box-shadow: var(--shadow); */
+    position: relative;
+    p{
+        color:#E0E0E0;
     }
 }
 
-#input-output-section {
-    display: flex;
-    margin-top: 20px;
-}
-
-.input-area, .output-area {
-    width: 50%;
-    padding: 10px;
-}
-
-.input-area {
-    border-right: 2px solid #ccc;
-}
-
-textarea {
-    width: 100%;
-}
-
-.hidden {
-    display: none;
-}
-
-#output-placeholder {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #f5f5f5;
-}
-
-.result-container {
-    overflow-x: auto;
-    max-width: 100%;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 1rem 0;
-}
-
-th, td {
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    text-align: left;
-    vertical-align: top;
-}
-
-th {
-    background-color: #f5f5f5;
-}
-
-.index, .key {
-    font-weight: bold;
-    background-color: #f8f9fa;
-}
-
-.primitive-value {
-    padding: 1rem;
-    font-size: 1.2rem;
-    border: 1px solid #eee;
-}
-
-/* Handle collapsed state for output */
-#output-container.collapsed {
-    max-height: 500px;  /* When collapsed, limit height */
-    overflow-y: hidden;  /* Hide overflow */
-    transition: max-height 0.3s ease;
-}
-
-.expand-btn {
-    margin-top: 1rem;
-    cursor: pointer;
-    font-weight: bold;
-    color: #3498db;
-}
-
-#expand-btn {
-    display: none;  /* Hide expand button by default */
-}
-
-
-
-/* Add these styles */
-#output-container.fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1000;
-    background: white;
+header h1 {
+    font-weight: 600;
+    font-size: 1.8rem;
     margin: 0;
-    border-radius: 0;
-    max-height: none !important;
+    letter-spacing: -0.5px;
 }
 
-#output-container.fullscreen #query-output {
-    height: calc(100vh - 100px);
-    overflow: auto;
+/* ===== Upload Container ===== */
+.upload-container {
+    width: 90%;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--container-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(4px);
+    height: 300px;
+    max-height: 350px;
 }
 
-#output-container.fullscreen #expand-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
+/* ===== Drag & Drop Area ===== */
+.drop-area {
+    display: flex;
+    justify-content: center;
+    border: 2px dashed var(--border-color);
+    padding: 2.5rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(45, 45, 45, 0.4);
+    width: 65%;
+    height: 72%;
 }
 
-.download-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #28a745;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-.download-btn:hover {
-    background-color: #218838;
-}
-/* Add some basic CSS to hide the input and output initially */
-#query-container, #output-container {
-    display: none;
-}
-#output-container {
-    display: none;
-    max-height: 400px;  /* Limit the height */
-    overflow: auto;  /* Make it scrollable */
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-top: 20px;
-}
-
-/* Style for an expandable button */
-#expand-btn {
-    display: none;
-    margin-top: 10px;
-    cursor: pointer;
-    color: #007BFF;
-}
-
-/* Style for the expanded output */
-#output-container.expanded {
-    max-height: none;
-    height: auto;
-}
-#containoutput{
+.drop-area p {
     display: flex;
     justify-content: center;
     align-items: center;
+    color: var(--text-secondary);
+    margin: 1rem 0 0;
+    font-size: 0.95rem;
+}
+
+.drop-area.drag-over {
+    border-color: var(--accent-hover);
+    background: rgba(61, 90, 254, 0.1);
+    transform: translateY(-2px);
+}
+
+/* ===== Buttons ===== */
+.upload-btn, .get-output-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 25%;
+    display: flex;
+    justify-content: center;
+    p{
+        color: #E0E0E0;
+    }
+    height: 100%;
+}
+
+.upload-btn:hover, .get-output-btn:hover {
+    background-color: color-mix(in srgb, var(--accent-hover) 95%, black);
+    box-shadow:#E0E0E0;
+    transform: translateY(-1px);
+}
+
+.browse-btn {
+    color: var(--accent);
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.browse-btn:hover {
+    color: var(--accent-hover);
+}
+
+/* ===== Query/Output Containers ===== */
+.query-container, .output-container {
+    background: var(--container-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem auto;
+    width: 90%;
+    max-width: 800px;
+    border: 1px solid var(--border-color);
+    display: none;
+}
+
+#query-input {
+    width: 100%;
+    padding: 1rem;
+    background: #333;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* ===== Output Section ===== */
+#output-container {
+    background: var(--container-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+#query-output {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-primary);
+    padding: 1rem;
+    background: #333;
+    border-radius: 8px;
+}
+
+/* ===== Table Styles ===== */
+table {
+    border-color: var(--border-color);
+}
+
+th {
+    background: #333;
+    color: var(--accent);
+    font-weight: 500;
+}
+
+td {
+    background: var(--container-bg);
+}
+
+/* ===== Download Button ===== */
+.download-btn {
+    background: #00b894;
+    color: white;
+}
+
+.download-btn:hover {
+    background: #00a383;
+}
+
+/* ===== Expand Button ===== */
+#expand-btn {
+    background: #6c5ce7;
+    color: white;
+}
+
+#expand-btn:hover {
+    background: #5b4bd6;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    .upload-container, .query-container, .output-container {
+        width: 95%;
+        padding: 1.2rem;
+    }
+    
+    .drop-area {
+        padding: 1.5rem;
+    }
+}
+
+/* ===== Utility Classes ===== */
+.hidden {
+    display: none !important;
+}
+
+.transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow);
+}
+
+/* ===== Glassmorphism Effect ===== */
+.glass {
+    background: rgba(38, 38, 38, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+#containoutput{
+    display: none;
+}
+
+.mainpage{
+    display: flex;
+    flex-direction:column;
+    height: 100vh;
+
+}
+
+#upload-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+    width: 100%;
+}
+#file-name{
+    display: flex;
+    /* height: 100%;
+    width: 100%; */
+    align-items: center;
+    justify-content: center;
+    /* height: 10%; */
+}
+.up{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    justify-content: space-between;
 }
