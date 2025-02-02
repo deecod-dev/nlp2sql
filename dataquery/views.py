@@ -66,11 +66,14 @@ def process_file(request):
 
 from django.http import JsonResponse
 from .utils import process_query
+import pandas as pd
 def query_view(request):
     if request.method == "POST":
-        query = request.POST.get('query')  # Get the query from the request
+        query = request.POST.get('query')  # Get the query from the request which is plainnn text
         if query:
             fpath="media/uploads/customers-100.csv"
+            df = pd.read_csv(fpath)
+            cnames = df.head(1)
             result = process_query(query)  # Process the query using the utility function
             # print(result)
             return JsonResponse({"result": result})

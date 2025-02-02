@@ -179,7 +179,7 @@
                         outputContainer.style.display = 'block';  // Show the output container even in case of error
                     }
                 } catch (error) {
-                    alert('Error in fetching data from the server.');
+                    alert('Query is too complex or can\'t be calculated.');
                 }
             } else {
                 alert('Please enter a query.');
@@ -280,7 +280,7 @@
                     
                     // Create headers
                     for (let i = 0; i < columns; i++) {
-                        htmlContent += `<th>Column ${i + 1}</th>`;
+                        htmlContent += `<th>${data[0][i]}</th>`;
                     }
                     htmlContent += '</tr></thead><tbody>';
 
