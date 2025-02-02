@@ -40,25 +40,47 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import duckdb
 import os
+import psycopg2
+import csv
 
 def home(request):
     return render(request, 'dataquery/home.html')
 
+DATABASE_URL = "postgresql://neondb_owner:npg_VMpDEhwj40aU@ep-frosty-mouse-a1r1wmnz-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
 def process_file(request):
     if request.method == 'POST' and request.FILES.get('file'):
         uploaded_file = request.FILES['file']
         upload_dir = os.path.join('media', 'uploads')
-        os.makedirs(upload_dir, exist_ok=True)  # Ensure the directory exists
+        os.makedirs(upload_dir, exist_ok=True)  
         file_path = os.path.join(upload_dir, uploaded_file.name)
 
-        # # Save the file to the server
         with open(file_path, 'wb') as f:
             for chunk in uploaded_file.chunks():
                 f.write(chunk)
-        conn = duckdb.connect('db.duckdb')
-        conn.execute(f"CREATE OR REPLACE TABLE customer_data AS SELECT * FROM read_csv_auto('{file_path}');")
+
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        with open(file_path, 'r', encoding='utf-8') as file:
+            csv_reader = csv.reader(file)
+            header = next(csv_reader)  
+
+            # **Use original column names from CSV**
+            column_names = [f'"{col.strip()}"' for col in header]  # Preserve case & handle spaces
+            
+            create_table_sql = f"CREATE TABLE IF NOT EXISTS data ({', '.join([f'{col} TEXT' for col in column_names])})"
+            cursor.execute(create_table_sql)
+
+            # **Insert using original column names**
+            insert_sql = f"INSERT INTO data ({', '.join(column_names)}) VALUES ({', '.join(['%s' for _ in column_names])})"
+
+            for row in csv_reader:
+                if len(row) == len(header):  
+                    cursor.execute(insert_sql, row)
+
+        conn.commit()
+        cursor.close()
         conn.close()
-        # Return a success message
+
         return JsonResponse({'message': 'File successfully uploaded', 'file_path': file_path})
 
     return JsonResponse({'error': 'No file uploaded or invalid request method'}, status=400)
@@ -111,3 +133,47 @@ def download_result(request):
         return JsonResponse({"error": "Access denied"}, status=403)
     
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
+
+
+
+import signal
+import psycopg2
+import atexit
+from django.db import connection
+
+# DATABASE_URL = "postgresql://neondb_owner:npg_VMpDEhwj40aU@ep-frosty-mouse-a1r1wmnz-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+
+def drop_database():
+    """Drops the database when the server stops."""
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("DROP TABLE IF EXISTS data;")  # Drop table instead of database if needed
+        cursor.close()
+        conn.close()
+        print("Database dropped successfully!")
+    except Exception as e:
+        print(f"Error dropping database: {e}")
+
+# **Handle Ctrl+C and Server Shutdown**
+# signal.signal(signal.SIGINT, lambda signum, frame: drop_database())   # Ctrl+C
+signal.signal(signal.SIGTERM, lambda signum, frame: drop_database())  # Server stop
+atexit.register(drop_database)  # Ensures cleanup at exit
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt  # Exempt CSRF for this API
+def drop_table_view(request):
+    """Drops the database table when a user leaves the site."""
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("DROP TABLE IF EXISTS data;")
+        cursor.close()
+        conn.close()
+        print("Database table dropped successfully!")
+        return JsonResponse({"message": "Database table dropped!"})
+    except Exception as e:
+        return JsonResponse({"error": f"Error dropping database: {e}"}, status=500)

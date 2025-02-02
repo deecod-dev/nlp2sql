@@ -201,3 +201,34 @@ th {
 .download-btn:hover {
     background-color: #218838;
 }
+/* Add some basic CSS to hide the input and output initially */
+#query-container, #output-container {
+    display: none;
+}
+#output-container {
+    display: none;
+    max-height: 400px;  /* Limit the height */
+    overflow: auto;  /* Make it scrollable */
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+/* Style for an expandable button */
+#expand-btn {
+    display: none;
+    margin-top: 10px;
+    cursor: pointer;
+    color: #007BFF;
+}
+
+/* Style for the expanded output */
+#output-container.expanded {
+    max-height: none;
+    height: auto;
+}
+#containoutput{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

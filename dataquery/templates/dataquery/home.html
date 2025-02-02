@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload CSV File</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
-    <style>
+    <!-- <style>
         /* Add some basic CSS to hide the input and output initially */
         #query-container, #output-container {
             display: none;
@@ -34,7 +34,7 @@
             max-height: none;
             height: auto;
         }
-    </style>
+    </style> -->
 </head>
 <body>
 
@@ -65,9 +65,11 @@
     </div>
 
     <!-- Output Section (Initially Hidden) -->
-    <div id="output-container" class="output-container">
-        <h2>Query Output:</h2>
-        <pre id="query-output"></pre>
+    <div class="containoutput">
+        <div id="output-container" class="output-container">
+            <h2>Query Output:</h2>
+            <pre id="query-output"></pre>
+        </div>
         <a id="download-link" style="display: none; margin-top: 15px;" class="download-btn">
             Download Result (CSV)
         </a>
@@ -85,6 +87,9 @@
         const queryInput = document.getElementById('query-input');
         const queryOutput = document.getElementById('query-output');
 
+        window.addEventListener("beforeunload", function () {
+            navigator.sendBeacon("/drop_table/");  // Send request to Django before leaving
+        });
         dropArea.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', (event) => {
