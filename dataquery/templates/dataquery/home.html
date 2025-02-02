@@ -146,6 +146,8 @@
                     // File upload success, now hide the form and show the query input section
                     uploadForm.style.display = 'none';  // Hide the upload section
                     queryContainer.style.display = 'block';  // Show the query section
+                    document.querySelector('header').style.display = 'none'; 
+                    document.querySelector('.upload-container').style.display = 'none'; 
                 } else {
                     alert("Error uploading file: " + data.error);
                 }
