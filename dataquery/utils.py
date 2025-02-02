@@ -213,11 +213,21 @@ def process_query(query, db_path="media/uploads/customers-100.csv"):
     query=query.strip()
     # query="SELECT \"First Name\", \"Last Name\" FROM df"
     print(query)
-    result = conn.execute(query).fetchall()
-
+    # result = conn.execute(query).fetchall()
+    cursor = conn.execute(query)
+    result = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    
+    # Convert to list of dictionaries
+    result_dicts = [dict(zip(column_names, row)) for row in result]
+    
     conn.close()
-    # Print results
-    # print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL",results)
-    # results_list = results.to_dict(orient='records')  # Each row is represented as a dictionary
-    print(result)
-    return result
+    print(result_dicts)
+    return result_dicts
+
+    # conn.close()
+    # # Print results
+    # # print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL",results)
+    # # results_list = results.to_dict(orient='records')  # Each row is represented as a dictionary
+    # print(result)
+    # return result
