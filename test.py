@@ -1,11 +1,20 @@
-# import duckdb
+import duckdb
+
+# Print DuckDB version
 # print(duckdb.__version__)
-# conn = duckdb.connect('db.duckdb')
 
-# # Manually install the SQLite extension
-# conn.execute("INSTALL sqlite;")  # This is how you install extensions in DuckDB
+# Connect to DuckDB (Persistent)
+conn = duckdb.connect('db.duckdb')
 
-# # Now run your query
-# result = conn.execute("SELECT 1").fetchall()
-# print(result)
+# Path to CSV file
+filepath = "media/uploads/customers-100.csv"
 
+# Create Table from CSV
+conn.execute(f"CREATE OR REPLACE TABLE customer_data AS SELECT * FROM read_csv_auto('{filepath}');")
+
+# Query and Display the Table
+result = conn.execute("SELECT * FROM customer_data").fetchall()
+print(result)
+
+# Close the connection
+conn.close()

@@ -68,6 +68,8 @@
     <div id="output-container" class="output-container">
         <h2>Query Output:</h2>
         <pre id="query-output"></pre>
+        <!-- Add the Expand Button here -->
+        <button id="expand-btn" style="display: none;">Expand</button>
     </div>
 
     <script>
@@ -149,8 +151,10 @@
         getOutputBtn.addEventListener('click', async (event) => {
             const query = queryInput.value.trim();
             if (query) {
+                console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", query);
                 try {
                     // Send the query to the backend using Fetch API
+                    console.log("hmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
                     const response = await fetch('/process-query/', {
                         method: 'POST',
                         headers: {
@@ -159,16 +163,20 @@
                         },
                         body: `query=${encodeURIComponent(query)}`
                     });
-
+                    console.log("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo", response);
                     const data = await response.json();
-
+                    console.log("chalo", data[0]);
                     if (data.result) {
                         // Process the result and render it in a table
+                        console.log("rendering")
                         renderQueryResults(data.result);
-                        outputContainer.style.display = 'block';
+                        console.log("rendered")
+                        // Ensure the output container is visible after rendering the results
+                        outputContainer.style.display = 'block';  // Show the output container
+                        console.log("made visible")
                     } else if (data.error) {
                         queryOutput.textContent = `Error: ${data.error}`;
-                        outputContainer.style.display = 'block';
+                        outputContainer.style.display = 'block';  // Show the output container even in case of error
                     }
                 } catch (error) {
                     alert('Error in fetching data from the server.');
@@ -177,44 +185,199 @@
                 alert('Please enter a query.');
             }
         });
+        
+        // function renderQueryResults(results) {
+        //     const table = document.createElement('table');
+        //     const thead = table.createTHead();
+        //     const tbody = table.createTBody();
 
-        function renderQueryResults(results) {
-            const table = document.createElement('table');
-            const thead = table.createTHead();
-            const tbody = table.createTBody();
+        //     // Create table headers
+        //     const headerRow = thead.insertRow();
+        //     Object.keys(results[0]).forEach(key => {
+        //         const th = document.createElement('th');
+        //         th.textContent = key;
+        //         headerRow.appendChild(th);
+        //     });
 
-            // Create table headers
-            const headerRow = thead.insertRow();
-            Object.keys(results[0]).forEach(key => {
-                const th = document.createElement('th');
-                th.textContent = key;
-                headerRow.appendChild(th);
-            });
+        //     // Create table rows
+        //     results.forEach(row => {
+        //         const tr = tbody.insertRow();
+        //         Object.values(row).forEach(value => {
+        //             const td = tr.insertCell();
+        //             td.textContent = value;
+        //         });
+        //     });
 
-            // Create table rows
-            results.forEach(row => {
-                const tr = tbody.insertRow();
-                Object.values(row).forEach(value => {
-                    const td = tr.insertCell();
-                    td.textContent = value;
-                });
-            });
+        //     // Append the table to the output container
+        //     const queryOutput = document.getElementById('query-output');
+        //     queryOutput.innerHTML = '';  // Clear previous content
+        //     queryOutput.appendChild(table);
 
-            // Append the table to the output container
-            const queryOutput = document.getElementById('query-output');
-            queryOutput.innerHTML = '';  // Clear previous content
-            queryOutput.appendChild(table);
+        //     // Handle the expandable output logic
+        //     const expandBtn = document.getElementById('expand-btn');
+        //     const outputContainer = document.getElementById('output-container');
 
-            // Handle the expandable output logic
-            const expandBtn = document.getElementById('expand-btn');
-            const outputContainer = document.getElementById('output-container');
+        //     if (results.length > 10) {  // If the result has more than 10 rows, show the expand button
+        //         expandBtn.style.display = 'inline-block';
+        //         expandBtn.addEventListener('click', () => {
+        //             outputContainer.classList.toggle('expanded');  // Toggle the expanded class
+        //         });
+        //     }
+        // }
+        
+        function renderToHTML(data) {
+            let htmlContent = '<html><body><table border="1">';
 
-            if (results.length > 10) {  // If the result has more than 10 rows, show the expand button
-                expandBtn.style.display = 'inline-block';
-                expandBtn.addEventListener('click', () => {
-                    outputContainer.classList.toggle('expanded');  // Toggle the expanded class
+            // Check if the data is an object (dictionary in Python)
+            if (typeof data === 'object' && !Array.isArray(data)) {
+                htmlContent += '<tr><th>Key</th><th>Value</th></tr>';
+                for (let key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        htmlContent += `<tr><td>${key}</td><td>${data[key]}</td></tr>`;
+                    }
+                }
+            }
+            // Check if the data is an array (list in Python)
+            else if (Array.isArray(data)) {
+                htmlContent += '<tr><th>Index</th><th>Value</th></tr>';
+                data.forEach((item, index) => {
+                    if (typeof item === 'object' || Array.isArray(item)) {
+                        // Handle nested objects/arrays by converting them to JSON strings
+                        item = JSON.stringify(item, null, 4);
+                    }
+                    htmlContent += `<tr><td>${index}</td><td>${item}</td></tr>`;
                 });
             }
+            // Check if the data is a tuple-like object (an array with fixed length)
+            else if (data instanceof Array) {
+                htmlContent += '<tr><th>Index</th><th>Value</th></tr>';
+                data.forEach((item, index) => {
+                    htmlContent += `<tr><td>${index}</td><td>${item}</td></tr>`;
+                });
+            } 
+            else {
+                // If it's any other type (string, number, etc.), just display it
+                htmlContent += `<tr><td>${data}</td></tr>`;
+            }
+
+            // Close the table and HTML tags
+            htmlContent += '</table></body></html>';
+            
+            return htmlContent;
+        }
+
+        function renderToHTML(data) {
+            let htmlContent = '<div class="result-container">';
+
+            const stringifyComplex = (value) => 
+                typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+
+            if (Array.isArray(data)) {
+                // Handle array of arrays (matrix/tabular data)
+                if (data.every(item => Array.isArray(item))) {
+                    htmlContent += '<table class="tabular-data"><thead><tr>';
+                    const columns = data[0]?.length || 0;
+                    
+                    // Create headers
+                    for (let i = 0; i < columns; i++) {
+                        htmlContent += `<th>Column ${i + 1}</th>`;
+                    }
+                    htmlContent += '</tr></thead><tbody>';
+
+                    // Create rows
+                    data.forEach(row => {
+                        htmlContent += '<tr>';
+                        row.forEach(cell => {
+                            htmlContent += `<td>${stringifyComplex(cell)}</td>`;
+                        });
+                        htmlContent += '</tr>';
+                    });
+                    htmlContent += '</tbody></table>';
+                } 
+                // Handle array of objects
+                else if (data.every(item => typeof item === 'object')) {
+                    const headers = [...new Set(data.flatMap(Object.keys))];
+                    htmlContent += '<table class="object-data"><thead><tr>';
+                    headers.forEach(header => {
+                        htmlContent += `<th>${header}</th>`;
+                    });
+                    htmlContent += '</tr></thead><tbody>';
+
+                    data.forEach(item => {
+                        htmlContent += '<tr>';
+                        headers.forEach(header => {
+                            htmlContent += `<td>${stringifyComplex(item[header])}</td>`;
+                        });
+                        htmlContent += '</tr>';
+                    });
+                    htmlContent += '</tbody></table>';
+                }
+                // Handle simple array
+                else {
+                    htmlContent += '<table class="simple-array"><tbody>';
+                    data.forEach((item, index) => {
+                        htmlContent += `<tr>
+                            <td class="index">${index}</td>
+                            <td>${stringifyComplex(item)}</td>
+                        </tr>`;
+                    });
+                    htmlContent += '</tbody></table>';
+                }
+            } 
+            else if (typeof data === 'object' && data !== null) {
+                // Handle single object
+                htmlContent += '<table class="object-table"><tbody>';
+                for (const [key, value] of Object.entries(data)) {
+                    htmlContent += `<tr>
+                        <td class="key">${key}</td>
+                        <td class="value">${stringifyComplex(value)}</td>
+                    </tr>`;
+                }
+                htmlContent += '</tbody></table>';
+            } 
+            else {
+                // Handle primitive values
+                htmlContent += `<div class="primitive-value">${data}</div>`;
+            }
+
+            htmlContent += '</div>';
+            return htmlContent;
+        }
+
+        function renderQueryResults(results) {
+            const outputContainer = document.getElementById('output-container');
+            const queryOutput = document.getElementById('query-output');
+            const expandBtn = document.getElementById('expand-btn');
+
+            // Clear previous content
+            queryOutput.innerHTML = renderToHTML(results);
+            
+            // Always show the output container
+            outputContainer.style.display = 'block';
+            
+            // Expand button functionality
+            expandBtn.style.display = 'inline-block';
+            expandBtn.textContent = 'Expand to Fullscreen';
+            
+            expandBtn.onclick = () => {
+                if (outputContainer.classList.contains('fullscreen')) {
+                    // If already fullscreen, exit
+                    outputContainer.classList.remove('fullscreen');
+                    expandBtn.textContent = 'Expand to Fullscreen';
+                } else {
+                    // Enter fullscreen
+                    outputContainer.classList.add('fullscreen');
+                    expandBtn.textContent = 'Exit Fullscreen';
+                }
+            };
+
+            // Add escape key handler
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && outputContainer.classList.contains('fullscreen')) {
+                    outputContainer.classList.remove('fullscreen');
+                    expandBtn.textContent = 'Expand to Fullscreen';
+                }
+            });
         }
     </script>
 

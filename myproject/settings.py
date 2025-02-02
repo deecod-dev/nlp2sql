@@ -84,13 +84,18 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite backend
+#         'NAME': BASE_DIR / 'db.duckdb',  # DuckDB database file
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite backend
-        'NAME': BASE_DIR / 'db.duckdb',  # DuckDB database file
+        'ENGINE': 'django.db.backends.sqlite3',  # Change this if needed
+        'NAME': BASE_DIR / "db.sqlite3",  # Change SQLite default file to DuckDB
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
