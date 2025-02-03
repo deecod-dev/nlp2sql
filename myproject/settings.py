@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-*4yf^3w_k)vd%1d0q4#h+9&!zj&so77)vqk2@s$uk3l_wu!-#h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['nlp2sql-5.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['nlp2sql-qpec.vercel.app','nlp2sql-5.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
