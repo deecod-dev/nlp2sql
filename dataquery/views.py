@@ -37,24 +37,24 @@ def query_view(request):
     if request.method == "POST":
         query = request.POST.get('query')
         if query:
-            result = process_query(query)  # Assuming this returns list of dicts
+            result = process_query(query)
+            sql_query = result['sql_query']  # Get the SQL query from process_query
+            result_data = result['result']
 
-            save_dir = os.path.join('media', 'saves')
-            os.makedirs(save_dir, exist_ok=True)
-            
+            # Save to CSV (existing code)
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             filename = f"result_{timestamp}.csv"
-            file_path = os.path.join(save_dir, filename)
-
-            # Use pandas for efficient CSV writing
-            pd.DataFrame(result).to_csv(file_path, index=False)
+            file_path = os.path.join('media', 'saves', filename)
+            pd.DataFrame(result_data).to_csv(file_path, index=False)
 
             return JsonResponse({
-                "result": result,
+                "result": result_data,
+                "sql_query": sql_query,  # Add SQL query to response
                 "download_url": f"/download/?file={filename}"
             })
         return JsonResponse({"error": "No query provided"}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
 
 
 def download_result(request):

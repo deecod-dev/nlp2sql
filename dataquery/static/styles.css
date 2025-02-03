@@ -134,13 +134,13 @@ header h1 {
     width: 90%;
     max-width: 800px;
     border: 1px solid var(--border-color);
-    display: flex
-;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     display: none;
     margin-right: 3%;
+    margin-left: 3%;
 }
 
 .output-container{
@@ -423,6 +423,7 @@ td {
     padding: 20px; /* Outer spacing */
     box-sizing: border-box;
     align-items: center;
+    justify-content: center;
 }
 
 
@@ -442,4 +443,30 @@ td {
     margin: 1.5rem auto;
     margin-left: 3%;
     display: none;
+}
+
+
+.sqlq {
+    /* margin: 20px 0; */
+    background: var(--container-bg);;
+    border-radius: 8px;
+    padding: 15px;
+    font-family: 'JetBrains Mono', monospace;
+    color: white;
+}
+
+.sql-header {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: white;
+}
+
+#sql-query-output {
+    background: #333;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 0.9em;
 }

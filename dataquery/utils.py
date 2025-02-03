@@ -136,7 +136,11 @@ def process_query(query, db_path="media/uploads/customers-100.csv"):
     
     conn.close()
     print(result_dicts)
-    return result_dicts
+    # return result_dicts
+    return {
+        'result': result_dicts,
+        'sql_query': sqlq  # Return the SQL query with results
+    }
 
     # conn.close()
     # # Print results

@@ -76,7 +76,10 @@
                 <img src="{% static 'load.png' %}" class="loading-spinner" style="display: none;">
             </button>
         </div>
-        <div class="sqlq">Generated SQL Query:</div>
+        <div class="sqlq">
+            <div class="sql-header">Generated SQL Query:</div>
+            <pre id="sql-query-output"></pre>
+        </div>
     </div>
 
     <!-- Output Section (Initially Hidden) -->
@@ -242,6 +245,7 @@
                     
                     // ADD/REPLACE THIS SECTION
                     if (data.result) {
+                        document.getElementById('sql-query-output').textContent = data.sql_query;
                         renderQueryResults(data.result);
                         const downloadLink = document.getElementById('download-link');
                         downloadLink.style.display = 'flex';
