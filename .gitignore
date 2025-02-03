@@ -1,20 +1,10 @@
-# # Ignore all files inside media/uploads/
-# media/uploads/*
-
-# # Ignore all files inside media/saves/
-# media/saves/*
-
-# # Ignore the environment file
-# myproject/.env
-
-
 # Ignore environment files
 .env
 myproject/.env
 
 # Ignore Python compiled files
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
 
@@ -23,28 +13,30 @@ db.sqlite3
 db.duckdb
 
 # Ignore migration cache files
-dataquery/migrations/__pycache__/
-myproject/__pycache__/
+**/migrations/__pycache__/
 
-# Ignore media and temporary files
-media/uploads/*
-media/saves/*
+# Ignore media files (all contents but keep directory structure)
+media/uploads/**
+media/saves/**
+!media/.keep  # Optional: Keep empty .keep file to preserve directory
 
-# Ignore static files generated at runtime
+# Ignore static files
 staticfiles/
-media/static/
 static/
 
-# Ignore virtual environment
+# Ignore virtual environments
 venv/
 env/
+myenv/
 
-# Ignore logs and temporary files
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
 *.log
 *.swp
 *.swo
-.DS_Store
 *.bak
-
-# Ignore VS Code settings (if using VS Code)
-.vscode/
