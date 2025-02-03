@@ -70,7 +70,10 @@
     <div id="query-container" class="query-container">
         <h2>Enter Your Query:</h2>
         <textarea id="query-input" rows="5" cols="50"></textarea><br><br>
-        <button id="get-output-btn" class="get-output-btn">Get Output</button>
+        <button id="get-output-btn" class="get-output-btn">
+            <span class="btn-text">Get Output</span>
+            <img src="{% static 'load.png' %}" class="loading-spinner" style="display: none;">
+        </button>
     </div>
 
     <!-- Output Section (Initially Hidden) -->
@@ -200,10 +203,23 @@
         
         // Handle "Get Output" button click
         getOutputBtn.addEventListener('click', async (event) => {
+            const getOutputBtn = event.currentTarget; // Get the button element
+            const btnText = getOutputBtn.querySelector('.btn-text');
+            const spinner = getOutputBtn.querySelector('.loading-spinner');
+
             const query = queryInput.value.trim();
             if (query) {
                 console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", query);
                 try {
+                    btnText.style.display = 'none';
+                    spinner.style.display = 'inline-block';
+                    getOutputBtn.disabled = true;
+
+                    const query = queryInput.value.trim();
+                    if (!query) {
+                        alert('Please enter a query.');
+                        return;
+                    }
                     const response = await fetch('/process-query/', {
                         method: 'POST',
                         headers: {
@@ -230,6 +246,10 @@
                     
                 } catch (error) {
                     alert('Query is too complex or can\'t be calculated.');
+                } finally{
+                    btnText.style.display = 'inline-block';
+                    spinner.style.display = 'none';
+                    getOutputBtn.disabled = false;
                 }
             } else {
                 alert('Please enter a query.');
