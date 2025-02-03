@@ -1,0 +1,37 @@
+# Database files
+db.*
+*.duckdb
+
+# Virtual environments
+test_env/
+.env/
+.venv/
+
+# Development files
+*.log
+*.sqlite
+*.db
+*.bak
+*.swp
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Django migrations
+**/migrations/
+
+# IDE files
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Large data files
+media/
+
+# Unnecessary Python files
+test.py

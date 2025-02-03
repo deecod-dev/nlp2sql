@@ -1,11 +1,5 @@
-psycopg2-binary==2.9.9
+Django==4.2
+gunicorn==21.2.0
+whitenoise==6.6.0
 python-dotenv==1.0.0
 google-generativeai==0.3.2
-pandas==2.1.4
-django>=4.0,<5.0
-djangorestframework
-gunicorn  # If deploying
-whitenoise  # Static files handling in production
-django-environ
-duckdb
-pandasql
