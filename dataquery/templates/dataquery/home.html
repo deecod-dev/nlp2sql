@@ -66,14 +66,17 @@
             <p id="file-name"></p>
         </div>
     </div>
-    <!-- Query Input Section (Initially Hidden) -->
-    <div id="query-container" class="query-container">
-        <h2>Enter Your Query:</h2>
-        <textarea id="query-input" rows="5" cols="50"></textarea><br><br>
-        <button id="get-output-btn" class="get-output-btn">
-            <span class="btn-text">Get Output</span>
-            <img src="{% static 'load.png' %}" class="loading-spinner" style="display: none;">
-        </button>
+    <div class="inpsql">
+        <!-- Query Input Section (Initially Hidden) -->
+        <div id="query-container" class="query-container">
+            <h2>Enter Your Query:</h2>
+            <textarea id="query-input" rows="5" cols="50"></textarea><br><br>
+            <button id="get-output-btn" class="get-output-btn">
+                <span class="btn-text">Get Output</span>
+                <img src="{% static 'load.png' %}" class="loading-spinner" style="display: none;">
+            </button>
+        </div>
+        <div class="sqlq">Generated SQL Query:</div>
     </div>
 
     <!-- Output Section (Initially Hidden) -->
@@ -114,8 +117,13 @@
         const queryOutput = document.getElementById('query-output');
         const dpt = document.getElementById('droptext');
 
-        window.addEventListener("beforeunload", function () {
-            navigator.sendBeacon("/drop_table/");  // Send request to Django before leaving
+        // window.addEventListener("beforeunload", function () {
+        //     navigator.sendBeacon("/drop_table/");  // Send request to Django before leaving
+        // });
+        // Add this to home.html's script section
+        window.addEventListener('beforeunload', () => {
+            // Clean uploads via AJAX before leaving
+            fetch('/drop_table/')  
         });
         dropArea.addEventListener('click', () => fileInput.click());
 
@@ -185,6 +193,7 @@
             // Hide upload section and show query input
             uploadForm.style.display = 'none';
             queryContainer.style.display = 'flex';
+            document.querySelector(".sqlq").style.display="flex"
             document.querySelector('header').style.display = 'none';
             document.querySelector('.upload-container').style.display = 'none';
             document.querySelector('.mainpage').style.display = 'none';

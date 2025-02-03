@@ -18,6 +18,6 @@ urlpatterns = [
     path('process_file/', views.process_file, name='process_file'),
     path('process-query/', views.query_view, name='process_query'),  # New endpoint
     path('download/', views.download_result, name='download_result'),
-    path('drop_table/', views.drop_files, name='drop_table'),  # Add this line
+    # path('drop_table/', views.drop_files, name='drop_table'),  # Add this line
     # path('upload/', views.process_file, name='upload_file'),
 ]

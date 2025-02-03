@@ -4,6 +4,8 @@ import duckdb
 import os
 
 def home(request):
+    # Clean uploads when home page is loaded/refreshed
+    empty_media_folder()  
     return render(request, 'dataquery/home.html')
 
 def process_file(request):
@@ -68,53 +70,81 @@ def download_result(request):
         return JsonResponse({"error": "Access denied"}, status=403)
     
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
+import signal
+import psycopg2
+import atexit
+from django.db import connection
 
 import shutil
 import os
-import signal
-import atexit
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-
 def empty_media_folder():
-    media_dir = os.path.join('media')
-    if os.path.exists(media_dir):
-        # Recursively remove all files and folders inside 'media' folder
-        shutil.rmtree(media_dir)
-        # Recreate the 'media' folder after deletion
-        os.makedirs(media_dir)
-
-# This function should be used for system signals and atexit
-def cleanup_files():
-    try:
-        empty_media_folder()
-        print("Files dropped successfully during cleanup!")
-    except Exception as e:
-        print(f"Error during cleanup: {e}")
-
+    """Clean ONLY the uploads directory (preserve saved results)"""
+    uploads_dir = os.path.join('media', 'uploads')
+    if os.path.exists(uploads_dir):
+        shutil.rmtree(uploads_dir)
+    os.makedirs(uploads_dir, exist_ok=True)  # Recreate empty directory
+from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def drop_files(request):
     try:
         empty_media_folder()
         print("Files dropped successfully!")
-
-        # If this is an HTTP request, return a response
-        # if request is not None:
-        return JsonResponse({"message": "Files dropped successfully!"})
-
+        return JsonResponse({'status': 'success'})  # Add this line
     except Exception as e:
         print(f"Error dropping files: {e}")
-        if request is not None:
-            return JsonResponse({"error": f"Error dropping files: {e}"}, status=500)
-    # If called by a signal, return an empty HttpResponse instead of None
-    print("hhhhhhhhhhhhhhhhh")
-    return JsonResponse({"message": "Cleanup executed!"})
-
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)  # And this line
 
 # **Handle Ctrl+C and Server Shutdown**
-signal.signal(signal.SIGINT, lambda signum, frame: drop_files())   # Ctrl+C
-signal.signal(signal.SIGTERM, lambda signum, frame: drop_files())  # Server stop
-atexit.register(drop_files)  # Ensures cleanup at exit
+# signal.signal(signal.SIGINT, lambda signum, frame: drop_database())   # Ctrl+C
+# signal.signal(signal.SIGTERM, lambda signum, frame: drop_database())  # Server stop
+atexit.register(empty_media_folder)  # Now cleans only uploads by default
+# import shutil
+# import os
+# import signal
+# import atexit
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+
+# def empty_media_folder():
+#     media_dir = os.path.join('media')
+#     if os.path.exists(media_dir):
+#         # Recursively remove all files and folders inside 'media' folder
+#         shutil.rmtree(media_dir)
+#         # Recreate the 'media' folder after deletion
+#         os.makedirs(media_dir)
+
+# # This function should be used for system signals and atexit
+# def cleanup_files():
+#     try:
+#         empty_media_folder()
+#         print("Files dropped successfully during cleanup!")
+#     except Exception as e:
+#         print(f"Error during cleanup: {e}")
+
+# @csrf_exempt
+# def drop_files(request):
+#     try:
+#         empty_media_folder()
+#         print("Files dropped successfully!")
+
+#         # If this is an HTTP request, return a response
+#         # if request is not None:
+#         return JsonResponse({"message": "Files dropped successfully!"})
+
+#     except Exception as e:
+#         print(f"Error dropping files: {e}")
+#         if request is not None:
+#             return JsonResponse({"error": f"Error dropping files: {e}"}, status=500)
+#     # If called by a signal, return an empty HttpResponse instead of None
+#     print("hhhhhhhhhhhhhhhhh")
+#     return JsonResponse({"message": "Cleanup executed!"})
+
+
+# # **Handle Ctrl+C and Server Shutdown**
+# signal.signal(signal.SIGINT, lambda signum, frame: drop_files())   # Ctrl+C
+# signal.signal(signal.SIGTERM, lambda signum, frame: drop_files())  # Server stop
+# atexit.register(drop_files)  # Ensures cleanup at exit
+
 
 
 
