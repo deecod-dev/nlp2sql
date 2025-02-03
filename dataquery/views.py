@@ -70,6 +70,36 @@ def download_result(request):
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
 
+import signal
+import psycopg2
+import atexit
+from django.db import connection
+
+import shutil
+import os
+def empty_media_folder():
+    media_dir = os.path.join('media')
+    if os.path.exists(media_dir):
+        # Recursively remove all files and folders inside 'media' folder
+        shutil.rmtree(media_dir)
+        # Recreate the 'media' folder after deletion
+        os.makedirs(media_dir)
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt  # Exempt CSRF for this API
+def drop_files(request):
+    try:
+        empty_media_folder()
+        print("files dropped successfully!")
+    except Exception as e:
+        print(f"Error dropping files: {e}")
+
+
+# **Handle Ctrl+C and Server Shutdown**
+# signal.signal(signal.SIGINT, lambda signum, frame: drop_database())   # Ctrl+C
+# signal.signal(signal.SIGTERM, lambda signum, frame: drop_database())  # Server stop
+atexit.register(drop_files)  # Ensures cleanup at exit
+
+
 
 
 
