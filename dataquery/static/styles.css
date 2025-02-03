@@ -18,6 +18,8 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
+    height: 100vh;
+    z-index: 1;
 }
 
 /* ===== Header ===== */
@@ -132,6 +134,10 @@ header h1 {
     width: 90%;
     max-width: 800px;
     border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     display: none;
 }
 
@@ -145,6 +151,7 @@ header h1 {
     font-family: 'JetBrains Mono', monospace;
     min-height: 120px;
     resize: vertical;
+    width: 95%;
 }
 
 /* ===== Output Section ===== */
@@ -161,16 +168,17 @@ header h1 {
     padding: 1rem;
     background: #333;
     border-radius: 8px;
+    overflow: hidden;
 }
 
 /* ===== Table Styles ===== */
 table {
-    border-color: var(--border-color);
+    border-color: white;
 }
 
 th {
     background: #333;
-    color: var(--accent);
+    color: grey;
     font-weight: 500;
 }
 
@@ -180,22 +188,38 @@ td {
 
 /* ===== Download Button ===== */
 .download-btn {
-    background: #00b894;
+    background: var(--accent);
     color: white;
+    border-radius: 7px;
+    text-decoration: none;
 }
 
 .download-btn:hover {
-    background: #00a383;
+    background: var(--accent-hover);
 }
 
 /* ===== Expand Button ===== */
-#expand-btn {
-    background: #6c5ce7;
-    color: white;
+/* Add fullscreen style to the output container */
+.output-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: var(--container-bg);
+    z-index: 1000;
+    overflow: auto;
 }
 
 #expand-btn:hover {
-    background: #5b4bd6;
+    background: transparent; /* Keep hover effect for the button */
+}
+
+#expand-btn:hover {
+    background: #494a4b;
 }
 
 /* ===== Animations ===== */
@@ -239,6 +263,9 @@ td {
 #containoutput{
     display: none;
 }
+/* .containoutput{
+    display: none;
+} */
 
 .mainpage{
     display: flex;
@@ -270,4 +297,103 @@ td {
     align-items: center;
     justify-content: center;
     justify-content: space-between;
+}
+
+.output_head{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.screencont{
+    /* z-index: 2;
+    height: 100vh;
+    width: 100ch;
+    display: flex;
+    align-items: center;
+    justify-content: center; */
+    width: 100%; /* Add this instead */
+}
+
+/* ===== Expand Button ===== */
+/* Add fullscreen style to the output container */
+.output-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: var(--container-bg);
+    z-index: 1000;
+    overflow: auto;
+}
+
+#expand-btn {
+    top: 20px;
+    right: 20px;
+    z-index: 1001; /* Above the fullscreen container */
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: visible; /* Ensure the button is visible */
+    cursor: pointer;
+    color: white;
+}
+
+#expand-btn:hover {
+    background: #343a40; /* Keep hover effect for the button */
+}
+
+#expand-btn svg {
+    width: 24px;
+    height: 24px;
+    transition: opacity 0.2s ease;
+    opacity: 1; /* Ensure the SVG is fully visible */
+}
+
+.collapse-icon {
+    display: none !important;
+}
+
+.output-container.fullscreen .collapse-icon {
+    display: block !important;
+}
+
+.output-container.fullscreen .expand-icon {
+    display: none !important;
+}
+#download-link{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Add to your existing CSS */
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    display: none;
+    margin-left: 8px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+/* Add this CSS to handle the spinner rotation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+    display: none;
+    animation: spin 1s linear infinite;
 }

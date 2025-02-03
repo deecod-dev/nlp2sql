@@ -95,8 +95,8 @@ def drop_files(request):
 
 
 # **Handle Ctrl+C and Server Shutdown**
-# signal.signal(signal.SIGINT, lambda signum, frame: drop_database())   # Ctrl+C
-# signal.signal(signal.SIGTERM, lambda signum, frame: drop_database())  # Server stop
+signal.signal(signal.SIGINT, lambda signum, frame: drop_files())   # Ctrl+C
+signal.signal(signal.SIGTERM, lambda signum, frame: drop_files())  # Server stop
 atexit.register(drop_files)  # Ensures cleanup at exit
 
 

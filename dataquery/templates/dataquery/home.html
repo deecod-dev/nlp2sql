@@ -56,7 +56,11 @@
                         <p id="droptext">Drag & Drop your file here or <span class="browse-btn">Browse</span></p>
                     </div>
                     
-                    <button type="submit" class="upload-btn">Upload File</button>
+                    <!-- Modify your upload button in the form -->
+                    <button type="submit" class="upload-btn">
+                        <span class="btn-text">Upload File</span>
+                        <img src="{% static 'load.png' %}" class="loading-spinner" style="display: none;">
+                    </button>
                 </div>
             </form>
             <p id="file-name"></p>
@@ -70,17 +74,31 @@
     </div>
 
     <!-- Output Section (Initially Hidden) -->
-    <div class="containoutput">
-        <div id="output-container" class="output-container">
-            <h2>Query Output:</h2>
-            <pre id="query-output"></pre>
+    <div class="screencont">
+        <div class="containoutput">
+            <div id="output-container" class="output-container">
+                <h2 class="output_head">
+                    <a id="download-link" style="display: none;" class="download-btn">
+                        Download (CSV)
+                    </a>
+                    <!-- Replace existing button content -->
+                    <button id="expand-btn" style="display: none;">
+                        <span class="expand-icon">
+                            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                                <path d="M14.293,9.707a1,1,0,0,1,0-1.414L18.586,4H16a1,1,0,0,1,0-2h5a1,1,0,0,1,1,1V8a1,1,0,0,1-2,0V5.414L15.707,9.707a1,1,0,0,1-1.414,0ZM3,22H8a1,1,0,0,0,0-2H5.414l4.293-4.293a1,1,0,0,0-1.414-1.414L4,18.586V16a1,1,0,0,0-2,0v5A1,1,0,0,0,3,22Z"/>
+                            </svg>
+                        </span>
+                        <span class="collapse-icon" style="display: none;">
+                            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                                <path d="M19 9h-2.58l3.29-3.29a1 1 0 1 0-1.42-1.42L15 7.57V5a1 1 0 0 0-1-1 1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h5a1 1 0 0 0 0-2zM10 13H5a1 1 0 0 0 0 2h2.57l-3.28 3.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0L9 16.42V19a1 1 0 0 0 1 1 1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1z"/>
+                            </svg>
+                        </span>
+                    </button>
+                </h2>
+                <pre id="query-output"></pre>
+            </div>
         </div>
-        <a id="download-link" style="display: none; margin-top: 15px;" class="download-btn">
-            Download Result (CSV)
-        </a>
-        <button id="expand-btn" style="display: none;">Expand</button>
     </div>
-
     <script>
         const dropArea = document.getElementById('drop-area');
         const fileInput = document.getElementById('file-input');
@@ -125,45 +143,61 @@
         });
 
         uploadForm.addEventListener('submit', async (event) => {
-            event.preventDefault();  // Prevent default form submission
+    event.preventDefault();
+    const uploadBtn = document.querySelector('.upload-btn');
+    const btnText = uploadBtn.querySelector('.btn-text');
+    const spinner = uploadBtn.querySelector('.loading-spinner');
 
-            // Check if a file is selected
-            if (!fileInput.files.length) {
-                alert("Please select a file before uploading.");
-                return;
-            }
+    // Show loading spinner and disable button
+    btnText.style.display = 'none';
+    spinner.style.display = 'inline-block';
+    uploadBtn.disabled = true;
 
-            // Prepare FormData to send the file
-            const formData = new FormData(uploadForm);
+    try {
+        // Check if a file is selected
+        if (!fileInput.files.length) {
+            alert("Please select a file before uploading.");
+            return;
+        }
 
-            try {
-                // Send the file to the server using fetch (AJAX)
-                const response = await fetch('{% url "process_file" %}', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value  // CSRF token
-                    }
-                });
+        // Prepare FormData to send the file
+        const formData = new FormData(uploadForm);
 
-                const data = await response.json();
-                console.log(data);
-
-                if (data.message === 'File successfully uploaded') {
-                    // File upload success, now hide the form and show the query input section
-                    uploadForm.style.display = 'none';  // Hide the upload section
-                    queryContainer.style.display = 'flex';  // Show the query section
-                    document.querySelector('header').style.display = 'none'; 
-                    document.querySelector('.upload-container').style.display = 'none'; 
-                    document.querySelector('.mainpage').style.display = 'none'; 
-                } else {
-                    alert("Error uploading file: " + data.error);
-                }
-            } catch (error) {
-                alert('Error in file upload: ' + error.message);
+        // Send the file to the server using fetch (AJAX)
+        const response = await fetch('{% url "process_file" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
             }
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.message === 'File successfully uploaded') {
+            // Hide upload section and show query input
+            uploadForm.style.display = 'none';
+            queryContainer.style.display = 'flex';
+            document.querySelector('header').style.display = 'none';
+            document.querySelector('.upload-container').style.display = 'none';
+            document.querySelector('.mainpage').style.display = 'none';
+        } else {
+            alert("Error uploading file: " + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('Error in file upload: ' + error.message);
+    } finally {
+        // Always reset button state
+        btnText.style.display = 'inline-block';
+        spinner.style.display = 'none';
+        uploadBtn.disabled = false;
+    }
+});        
+        
         // Handle "Get Output" button click
         getOutputBtn.addEventListener('click', async (event) => {
             const query = queryInput.value.trim();
@@ -185,7 +219,7 @@
                     if (data.result) {
                         renderQueryResults(data.result);
                         const downloadLink = document.getElementById('download-link');
-                        downloadLink.style.display = 'inline-block';
+                        downloadLink.style.display = 'flex';
                         downloadLink.href = data.download_url;
                         outputContainer.style.display = 'block';
                     } else if (data.error) {
@@ -364,26 +398,43 @@
             const outputContainer = document.getElementById('output-container');
             const queryOutput = document.getElementById('query-output');
             const expandBtn = document.getElementById('expand-btn');
-
+            expandBtn.style.display = "block"
             // Clear previous content
             queryOutput.innerHTML = renderToHTML(results);
-            
+
             // Always show the output container
             outputContainer.style.display = 'block';
-            
-            // Expand button functionality
-            expandBtn.style.display = 'inline-block';
-            expandBtn.textContent = 'Expand to Fullscreen';
-            
+            document.querySelector("#query-output").style.overflow="scroll"
+
+            // Replace the emoji toggle code with SVGs directly here
+            expandBtn.innerHTML = `
+                <span class="expand-icon">
+                    <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                        <path d="M14.293,9.707a1,1,0,0,1,0-1.414L18.586,4H16a1,1,0,0,1,0-2h5a1,1,0,0,1,1,1V8a1,1,0,0,1-2,0V5.414L15.707,9.707a1,1,0,0,1-1.414,0ZM3,22H8a1,1,0,0,0,0-2H5.414l4.293-4.293a1,1,0,0,0-1.414-1.414L4,18.586V16a1,1,0,0,0-2,0v5A1,1,0,0,0,3,22Z"/>
+                    </svg>
+                </span>
+                <span class="collapse-icon" style="display: none;">
+                    <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                        <path d="M19 9h-2.58l3.29-3.29a1 1 0 1 0-1.42-1.42L15 7.57V5a1 1 0 0 0-1-1 1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h5a1 1 0 0 0 0-2zM10 13H5a1 1 0 0 0 0 2h2.57l-3.28 3.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0L9 16.42V19a1 1 0 0 0 1 1 1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1z"/>
+                    </svg>
+                </span>
+            `;
+
+            // Handle the expand/collapse button toggle
             expandBtn.onclick = () => {
-                if (outputContainer.classList.contains('fullscreen')) {
-                    // If already fullscreen, exit
-                    outputContainer.classList.remove('fullscreen');
-                    expandBtn.textContent = 'Expand to Fullscreen';
+                outputContainer.classList.toggle('fullscreen');
+                const isFullscreen = outputContainer.classList.contains('fullscreen');
+                if (isFullscreen) {
+                    // Show collapse icon when expanded
+                    document.querySelector('.expand-icon').style.display = 'none';
+                    document.querySelector('.collapse-icon').style.display = 'inline-block';
+                    document.querySelector("#query-output").style.overflow="visible"
+                    document.querySelector("#query-output").style.width="fit-content"
                 } else {
-                    // Enter fullscreen
-                    outputContainer.classList.add('fullscreen');
-                    expandBtn.textContent = 'Exit Fullscreen';
+                    // Show expand icon when collapsed
+                    document.querySelector('.collapse-icon').style.display = 'none';
+                    document.querySelector('.expand-icon').style.display = 'inline-block';
+                    document.querySelector("#query-output").style.overflow="scroll"
                 }
             };
 
@@ -391,10 +442,13 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && outputContainer.classList.contains('fullscreen')) {
                     outputContainer.classList.remove('fullscreen');
-                    expandBtn.textContent = 'Expand to Fullscreen';
+                    document.querySelector('.expand-icon').style.display = 'inline-block';
+                    document.querySelector('.collapse-icon').style.display = 'none';
                 }
             });
         }
+
+    
     </script>
 
 </body>
