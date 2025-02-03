@@ -17,6 +17,8 @@ def process_file(request):
         with open(file_path, 'wb') as f:
             for chunk in uploaded_file.chunks():
                 f.write(chunk)
+        new_file_path = os.path.join(upload_dir, 'customers-100.csv')
+        os.rename(file_path, new_file_path)
 
         # Return a success message
         return JsonResponse({'message': 'File successfully uploaded', 'file_path': file_path})
@@ -27,14 +29,31 @@ def process_file(request):
 from django.http import JsonResponse
 from .utils import process_query
 from django.http import FileResponse
+from datetime import datetime
+import pandas as pd
 def query_view(request):
     if request.method == "POST":
-        query = request.POST.get('query')  # Get the query from the request
+        query = request.POST.get('query')
         if query:
-            result = process_query(query)  # Process the query using the utility function
-            return JsonResponse({"result": result})
+            result = process_query(query)  # Assuming this returns list of dicts
+
+            save_dir = os.path.join('media', 'saves')
+            os.makedirs(save_dir, exist_ok=True)
+            
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"result_{timestamp}.csv"
+            file_path = os.path.join(save_dir, filename)
+
+            # Use pandas for efficient CSV writing
+            pd.DataFrame(result).to_csv(file_path, index=False)
+
+            return JsonResponse({
+                "result": result,
+                "download_url": f"/download/?file={filename}"
+            })
         return JsonResponse({"error": "No query provided"}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
 
 def download_result(request):
     filename = request.GET.get('file')
