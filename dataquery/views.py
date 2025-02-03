@@ -69,14 +69,13 @@ def download_result(request):
     
     return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
-
-import signal
-import psycopg2
-import atexit
-from django.db import connection
-
 import shutil
 import os
+import signal
+import atexit
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 def empty_media_folder():
     media_dir = os.path.join('media')
     if os.path.exists(media_dir):
@@ -84,14 +83,32 @@ def empty_media_folder():
         shutil.rmtree(media_dir)
         # Recreate the 'media' folder after deletion
         os.makedirs(media_dir)
-from django.views.decorators.csrf import csrf_exempt
-@csrf_exempt  # Exempt CSRF for this API
+
+# This function should be used for system signals and atexit
+def cleanup_files():
+    try:
+        empty_media_folder()
+        print("Files dropped successfully during cleanup!")
+    except Exception as e:
+        print(f"Error during cleanup: {e}")
+
+@csrf_exempt
 def drop_files(request):
     try:
         empty_media_folder()
-        print("files dropped successfully!")
+        print("Files dropped successfully!")
+
+        # If this is an HTTP request, return a response
+        # if request is not None:
+        return JsonResponse({"message": "Files dropped successfully!"})
+
     except Exception as e:
         print(f"Error dropping files: {e}")
+        if request is not None:
+            return JsonResponse({"error": f"Error dropping files: {e}"}, status=500)
+    # If called by a signal, return an empty HttpResponse instead of None
+    print("hhhhhhhhhhhhhhhhh")
+    return JsonResponse({"message": "Cleanup executed!"})
 
 
 # **Handle Ctrl+C and Server Shutdown**
