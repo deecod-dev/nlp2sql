@@ -454,23 +454,31 @@
             `;
 
             // Handle the expand/collapse button toggle
+            // In your renderQueryResults function, update the expandBtn.onclick handler:
             expandBtn.onclick = () => {
-                outputContainer.classList.toggle('fullscreen');
-                const isFullscreen = outputContainer.classList.contains('fullscreen');
+                const outputContainer = document.getElementById('output-container');
+                const isFullscreen = outputContainer.classList.toggle('fullscreen');
+                
                 if (isFullscreen) {
-                    // Show collapse icon when expanded
                     document.querySelector('.expand-icon').style.display = 'none';
                     document.querySelector('.collapse-icon').style.display = 'inline-block';
-                    document.querySelector("#query-output").style.overflow="visible"
-                    document.querySelector("#query-output").style.width="fit-content"
+                    outputContainer.style.overflow = 'auto';
+                    outputContainer.style.width = '100vw';
+                    outputContainer.style.maxWidth = 'none';
                 } else {
-                    // Show expand icon when collapsed
                     document.querySelector('.collapse-icon').style.display = 'none';
                     document.querySelector('.expand-icon').style.display = 'inline-block';
-                    document.querySelector("#query-output").style.overflow="hidden"
+                    outputContainer.style.overflow = 'hidden';
+                    outputContainer.style.width = '';
+                    outputContainer.style.maxWidth = '800px';
+                    outputContainer.style.height = '';
+                    
+                    // Add smooth transition reset
+                    setTimeout(() => {
+                        outputContainer.style.overflow = 'hidden';
+                    }, 300);
                 }
             };
-
             // Add escape key handler
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && outputContainer.classList.contains('fullscreen')) {

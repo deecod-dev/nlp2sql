@@ -156,6 +156,9 @@ header h1 {
     align-items: center;
     justify-content: center;
     display: none;
+    transition: all 0.3s ease;
+    max-width: 90%;
+    overflow: hidden;
 }
 
 #query-input {
@@ -186,6 +189,20 @@ header h1 {
     background: #333;
     border-radius: 8px;
     overflow: hidden;
+    max-width: 100%;
+    overflow-x: auto;
+    transition: all 0.3s ease;
+}
+.output-container:not(.fullscreen) {
+    max-height: 60vh;
+    width: 90% !important;
+}
+.output-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#query-output {
+    transition: max-width 0.3s ease, overflow 0.3s ease;
 }
 
 /* ===== Table Styles ===== */
