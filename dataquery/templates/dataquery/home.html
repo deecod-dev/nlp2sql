@@ -261,7 +261,7 @@
                     
                     // ADD/REPLACE THIS SECTION
                     if (data.result) {
-                        document.getElementById('sql-query-output').textContent = data.sql_query;
+                        document.getElementById('sql-query-output').textContent = data.result.sql_query;
                         renderQueryResults(data.result.result);
                         console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
                         console.log(data.result.result)
