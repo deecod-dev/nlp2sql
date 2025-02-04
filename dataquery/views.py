@@ -41,6 +41,10 @@ def query_view(request):
             sql_query = result['sql_query']  # Get the SQL query from process_query
             result_data = result['result']
 
+            # Ensure saves directory exists
+            save_dir = os.path.join('media', 'saves')
+            os.makedirs(save_dir, exist_ok=True)  # This creates the directory if it doesn't exist
+
             # Save to CSV (existing code)
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             filename = f"result_{timestamp}.csv"
@@ -80,9 +84,23 @@ import os
 def empty_media_folder():
     """Clean ONLY the uploads directory (preserve saved results)"""
     uploads_dir = os.path.join('media', 'uploads')
+    saves_dir = os.path.join('media', 'saves')
+
     if os.path.exists(uploads_dir):
-        shutil.rmtree(uploads_dir)
-    os.makedirs(uploads_dir, exist_ok=True)  # Recreate empty directory
+        for filename in os.listdir(uploads_dir):
+            file_path = os.path.join(uploads_dir, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f'Failed to delete {file_path}. Reason: {e}')
+    # Create empty uploads directory if it doesn't exist
+    os.makedirs(uploads_dir, exist_ok=True)
+    
+    # Create saves directory if it doesn't exist (but don't clear it)
+    os.makedirs(saves_dir, exist_ok=True)
 from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def drop_files(request):
@@ -98,6 +116,8 @@ def drop_files(request):
 # signal.signal(signal.SIGINT, lambda signum, frame: drop_database())   # Ctrl+C
 # signal.signal(signal.SIGTERM, lambda signum, frame: drop_database())  # Server stop
 atexit.register(empty_media_folder)  # Now cleans only uploads by default
+
+
 # import shutil
 # import os
 # import signal

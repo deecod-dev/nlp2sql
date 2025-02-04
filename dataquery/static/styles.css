@@ -295,6 +295,7 @@ td {
 }
 
 #containoutput{
+    display: flex;
     display: none;
 }
 /* .containoutput{

@@ -22,7 +22,7 @@ media/saves/**
 
 # Ignore static files
 staticfiles/
-static/
+# static/
 
 # Ignore virtual environments
 venv/
