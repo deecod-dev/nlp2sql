@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import environ
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -141,10 +140,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 import environ
 env = environ.Env()
-
-# Read the .env file (ensure this is correct and points to the correct location)
-environ.Env.read_env()  # If .env is in the root directory
-# print(env())
+ENV_PATH = os.path.join(".env")  # Adjust based on your project structure
+environ.Env.read_env(ENV_PATH)  # Load .env from the correct location
 GEMINI_API_KEY = env('gemapikey')
 
 print("GEMINI_API_KEY:", GEMINI_API_KEY)

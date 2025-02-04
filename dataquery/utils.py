@@ -18,6 +18,11 @@ import pandas as pd
 import sys
 import pandasql as psql
 import pandas as pd
+from django.conf import settings  
+api_key = settings.GEMINI_API_KEY
+
+# Initialize Google Generative AI with the API key
+genai.configure(api_key=api_key)
 
 rules="In DuckDB SQL, identifiers with spaces or special characters (like !@#$%^&*) must be enclosed in double quotes. Reserved keywords and case-sensitive identifiers should also be quoted. Column names starting with numbers can be quoted for clarity. String literals must be enclosed in single quotes, with any internal single quotes escaped by doubling them. For dates, use DATE 'YYYY-MM-DD' and for timestamps, TIMESTAMP 'YYYY-MM-DD HH:MM:SS'. DuckDB supports type casting using the :: operator (preferred) or CAST(expr AS TYPE). Special operators include || for string concatenation, -> and ->> for JSON/struct access, and # for map access. Nested data is accessed with dot notation for structs and 1-based indexing for arrays. DuckDB-specific features include direct file querying (FROM 'file.csv'), sampling (USING SAMPLE), and LIMIT BY for limiting results per group. Temporary tables use the TEMP or TEMPORARY keyword. Common pitfalls include failing to quote identifiers with spaces, misusing case-sensitive identifiers, and incorrect JSON access. Always ensure reserved keywords are quoted, and validate date formats, nested data access, and file paths."
 
@@ -55,13 +60,13 @@ def process_query(query, db_path="media/uploads/customers-100.csv"):
     print(datainfo)
 
 
-    load_dotenv()
-    api_key = os.getenv("gemapikey")
+    # load_dotenv()
+    # api_key = os.getenv("gemapikey")
 
     if not api_key:
         raise ValueError("GEMINI_API_KEY not found in .env file!")
 
-    genai.configure(api_key=api_key)
+    # genai.configure(api_key=api_key)
     model = genai.GenerativeModel("gemini-pro")
 
     def nl_to_sql(natural_language_query):
