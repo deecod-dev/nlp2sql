@@ -488,3 +488,10 @@ td {
     word-wrap: break-word;
     font-size: 0.9em;
 }
+.db-btn{
+    background: var(--container-bg);
+    color: white;
+}
+.db-btn:hover{
+    background: black;
+}

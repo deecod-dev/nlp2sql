@@ -8,6 +8,23 @@ def home(request):
     empty_media_folder()  
     return render(request, 'dataquery/home.html')
 
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+# Global variable in settings.py (e.g., SETTINGS_FLAG)
+@csrf_exempt  # Disable CSRF for testing (remove this in production)
+def update_settings_variable(request):
+    if request.method == "POST":
+        settings.DBFLAG = not settings.DBFLAG  # Toggle the variable
+        print("variiiiiiiiiiiiiiiiiiiiiiableee: ",settings.DBFLAG)
+        db=""
+        if(settings.DBFLAG):
+            db="DuckDB"
+        else:
+            db="PostgreSQL"
+        return JsonResponse({"message": f"Database changed to {db}"})
+    
+    return JsonResponse({"error": "Invalid request"}, status=405)
+
 def process_file(request):
     if request.method == 'POST' and request.FILES.get('file'):
         uploaded_file = request.FILES['file']

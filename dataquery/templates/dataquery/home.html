@@ -44,6 +44,7 @@
         <header>
             <h1>Text to SQL</h1>
             <p>Analyze your data files in just 10 seconds</p>
+            <button class="db-btn">Switch Database for queries</button>
         </header>
 
         <!-- File Upload Section -->
@@ -109,6 +110,21 @@
         </div>
     </div>
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const dbflag = document.querySelector(".db-btn");
+            dbflag.onclick = function () {
+                fetch("/update_settings/", {
+                    method: "POST",
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message || data.error);
+                    console.log("Response:", data);
+                })
+                .catch(error => console.error("Error:", error));
+            };
+        });
+
         const dropArea = document.getElementById('drop-area');
         const fileInput = document.getElementById('file-input');
         const fileNameDisplay = document.getElementById('file-name');
