@@ -82,8 +82,8 @@ if(settings.DBFLAG):
             query = request.POST.get('query')
             if query:
                 result = process_query(query)
-                sql_query = result['sql_query']  # Get the SQL query from process_query
-                result_data = result['result']
+                sql_query = result["result"]['sql_query']  # Get the SQL query from process_query
+                result_data = result['result']["result"]
                 # db=result["dbused"]
 
                 # Ensure saves directory exists
