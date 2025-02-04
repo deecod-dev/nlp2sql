@@ -262,7 +262,9 @@
                     // ADD/REPLACE THIS SECTION
                     if (data.result) {
                         document.getElementById('sql-query-output').textContent = data.sql_query;
-                        renderQueryResults(data.result);
+                        renderQueryResults(data.result.result);
+                        console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+                        console.log(data.result.result)
                         const downloadLink = document.getElementById('download-link');
                         downloadLink.style.display = 'flex';
                         downloadLink.href = data.download_url;

@@ -26,7 +26,7 @@ if(settings.DBFLAG):
 
     rules="In DuckDB SQL, identifiers with spaces or special characters (like !@#$%^&*) must be enclosed in double quotes. Reserved keywords and case-sensitive identifiers should also be quoted. Column names starting with numbers can be quoted for clarity. String literals must be enclosed in single quotes, with any internal single quotes escaped by doubling them. For dates, use DATE 'YYYY-MM-DD' and for timestamps, TIMESTAMP 'YYYY-MM-DD HH:MM:SS'. DuckDB supports type casting using the :: operator (preferred) or CAST(expr AS TYPE). Special operators include || for string concatenation, -> and ->> for JSON/struct access, and # for map access. Nested data is accessed with dot notation for structs and 1-based indexing for arrays. DuckDB-specific features include direct file querying (FROM 'file.csv'), sampling (USING SAMPLE), and LIMIT BY for limiting results per group. Temporary tables use the TEMP or TEMPORARY keyword. Common pitfalls include failing to quote identifiers with spaces, misusing case-sensitive identifiers, and incorrect JSON access. Always ensure reserved keywords are quoted, and validate date formats, nested data access, and file paths."
 
-    def process_query(query, db_path="media/uploads/customers-100.csv"):
+    def process_query(query, db_path="media/uploads/upfile.csv"):
         # query=query+"processedddd bkl"
         def load_data_prompt(data):
             # Read the CSV file
@@ -183,7 +183,7 @@ else:
     """
     import psycopg2
     import re
-    def process_query(query, db_path="media/uploads/customers-100.csv"):
+    def process_query(query, db_path="media/uploads/upfile.csv"):
         # query=query+"processedddd bkl"
         def load_data_prompt(data):
             # Read the CSV file

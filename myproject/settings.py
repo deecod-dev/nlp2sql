@@ -141,10 +141,12 @@ import environ
 env = environ.Env()
 ENV_PATH = os.path.join(".env")  # Adjust based on your project structure
 environ.Env.read_env(ENV_PATH)  # Load .env from the correct location
-GEMINI_API_KEY = env('gemapikey')
 
+GEMINI_API_KEY = env('gemapikey')
 print("GEMINI_API_KEY:", GEMINI_API_KEY)
 
+DATABASE_URL=env('gemapikey')
+print("dburl:",DATABASE_URL)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -157,3 +159,4 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DBFLAG=0 # 1 for duckDB 0 for PostgreSQL
+DATABASE_URL="postgresql://neondb_owner:npg_VMpDEhwj40aU@ep-frosty-mouse-a1r1wmnz-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
