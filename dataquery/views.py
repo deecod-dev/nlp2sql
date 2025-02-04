@@ -40,6 +40,7 @@ def query_view(request):
             result = process_query(query)
             sql_query = result['sql_query']  # Get the SQL query from process_query
             result_data = result['result']
+            db=result["dbused"]
 
             # Ensure saves directory exists
             save_dir = os.path.join('media', 'saves')
@@ -52,6 +53,7 @@ def query_view(request):
             pd.DataFrame(result_data).to_csv(file_path, index=False)
 
             return JsonResponse({
+                "db":db,
                 "result": result_data,
                 "sql_query": sql_query,  # Add SQL query to response
                 "download_url": f"/download/?file={filename}"

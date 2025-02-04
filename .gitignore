@@ -14,7 +14,7 @@ db.duckdb
 
 # Ignore migration cache files
 **/migrations/__pycache__/
-
+*/dataquery/__pycache__/
 # Ignore media files (all contents but keep directory structure)
 media/uploads/**
 media/saves/**
